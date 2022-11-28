@@ -17,10 +17,10 @@
 #include "DrawableObject.hpp"
 
 
-#define PI 3.14
 
-#define STACKS 20
-#define SECTORS 10
+
+#define STACKS 30
+#define SECTORS 30
 
 extern GLuint N;
 

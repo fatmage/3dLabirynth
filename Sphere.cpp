@@ -16,21 +16,17 @@ Sphere::Sphere() {
 }
 
 void Sphere::initialize(GLuint prog) {
-    radius = 0.5;
+    radius = 1.0;
     createBuffers();
     programID = prog;
-    setBuffers();   
     setPosition(0.0, 0.0, 0.0);
-    setRotation(0.0, 0.0, 0.0);
-
+    setRotation((rand()%360)*PI*2/360, (rand()%360)*PI*2/360, (rand()%360)*PI*2/360);
+    setBuffers();   
 }
 
 void Sphere::setPosition(GLfloat x, GLfloat y, GLfloat z) {
-    if (x >= 0)
         pos[0] = x;
-    if (y >= 0)
         pos[1] = y;
-    if (z >= 0)
         pos[2] = z;
 }       
 
@@ -62,6 +58,7 @@ void Sphere::setBuffers() {
     GLfloat stackStep = PI / STACKS;
     GLfloat sectorAngle, stackAngle;
 
+    
     for (int i = 0; i <= STACKS; ++i) {
         stackAngle = (PI / 2) - i * stackStep;
         xy = radius * cosf(stackAngle);             // r * cos(u)
@@ -96,9 +93,6 @@ void Sphere::setBuffers() {
         }
     }
 
-    //for (int i = 0; i < vertices.size(); i+= 3)
-      //  printf("%f %f %f\n", vertices[i], vertices[i+1], vertices[i+2]);
-
     int k1, k2;
     for(int i = 0; i < STACKS; ++i)
     {
@@ -117,7 +111,7 @@ void Sphere::setBuffers() {
             }
 
             // k1+1 => k2 => k2+1
-            if(i != (STACKS-1))
+            if(i != (STACKS))
             {
                 indices.push_back(k1 + 1);
                 indices.push_back(k2);
@@ -135,11 +129,96 @@ void Sphere::setBuffers() {
             }
         }
     }
+    /*
 
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices.data(), GL_STATIC_DRAW);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices.data(), GL_STATIC_DRAW);
+    vertices.push_back(0.2); //0
+    vertices.push_back(0.2);
+    vertices.push_back(0.2);
+
+    vertices.push_back(0.2); //1
+    vertices.push_back(0.2);
+    vertices.push_back(-0.2);
+
+    vertices.push_back(-0.2); //2
+    vertices.push_back(0.2);
+    vertices.push_back(0.2);
+
+    vertices.push_back(-0.2); //3
+    vertices.push_back(0.2);
+    vertices.push_back(-0.2);
+
+    vertices.push_back(0.2); //4
+    vertices.push_back(-0.2);
+    vertices.push_back(0.2);
+
+    vertices.push_back(0.2); //5
+    vertices.push_back(-0.2);
+    vertices.push_back(-0.2);
+
+    vertices.push_back(-0.2); //6
+    vertices.push_back(-0.2);
+    vertices.push_back(0.2);
+
+    vertices.push_back(-0.2); //7
+    vertices.push_back(-0.2);
+    vertices.push_back(-0.2);
+
+    indices.push_back(0);
+    indices.push_back(1);
+    indices.push_back(2);
+    
+    indices.push_back(1);
+    indices.push_back(2);
+    indices.push_back(3);
+    
+    indices.push_back(0);
+    indices.push_back(2);
+    indices.push_back(4);
+
+    indices.push_back(2);
+    indices.push_back(6);
+    indices.push_back(4);
+
+    indices.push_back(6);
+    indices.push_back(4);
+    indices.push_back(5);
+
+    indices.push_back(6);
+    indices.push_back(5);
+    indices.push_back(7);
+
+    indices.push_back(2);
+    indices.push_back(3);
+    indices.push_back(6);
+
+    indices.push_back(3);
+    indices.push_back(6);
+    indices.push_back(7);
+
+    indices.push_back(0);
+    indices.push_back(1);
+    indices.push_back(4);
+
+    indices.push_back(1);
+    indices.push_back(4);
+    indices.push_back(5);
+
+    indices.push_back(1);
+    indices.push_back(3);
+    indices.push_back(5);
+
+    indices.push_back(3);
+    indices.push_back(5);
+    indices.push_back(7);
+
+*/
+
+
+    glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(GLfloat), vertices.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLuint), indices.data(), GL_STATIC_DRAW);
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3*sizeof(GLfloat), (void*)0);
     glEnableVertexAttribArray(0);
+
 
 }
 
@@ -148,9 +227,21 @@ void Sphere::draw() {
 	bindProgram();
     bindVAO();
 
-    glDrawArrays(GL_TRIANGLES, 0, vertices.size());
-    //glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, (void*)0);
-}
 
+    glm::mat4 transformmat = glm::mat4(1.0f);
+    transformmat = glm::scale(transformmat, glm::vec3(0.2/N, 0.2/N, 0.2/N));
+    transformmat = glm::rotate(transformmat, rot[0], glm::vec3(0.0f, 0.0f, 1.0f));
+    transformmat = glm::rotate(transformmat, rot[1], glm::vec3(0.0f, 1.0f, 0.0f));
+    transformmat = glm::rotate(transformmat, rot[2], glm::vec3(1.0f, 0.0f, 0.0f));
+    setUniformmat4("transform", transformmat);
+
+    glm::mat4 modelmat = glm::mat4(1.0f);
+    modelmat = glm::translate(modelmat, glm::vec3(pos[0], pos[1], pos[2]));
+    setUniformmat4("model", modelmat);
+
+    //setUniform3f("colorr", pos[0]/(N-1), pos[1]/(N-1), pos[2]/(N-1));
+
+    glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, (void*)0);
+}
 
 

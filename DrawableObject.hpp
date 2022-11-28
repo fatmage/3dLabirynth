@@ -18,6 +18,7 @@
 #include <algorithm>
 #include <sstream>
 
+#define PI 3.1415926535897932384626433832795
 
 #include <stdlib.h>
 #include <string.h>

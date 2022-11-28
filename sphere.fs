@@ -2,11 +2,12 @@
 
 // Ouput data
 out vec4 color;
+in vec3 pos;
 
 void main()
 {
 
 	// Output color = red 
-	color = vec4(1.0, 0.0, 0.0, 1.0);
+	color = vec4(pos.xyz, 1.0);
 
 }

@@ -18,7 +18,7 @@ using namespace glm;
 
 #include "DrawableObject.hpp"
 #include "Pyramid.hpp"
-//#include "Sphere.hpp"
+#include "Sphere.hpp"
 
 #include <time.h>
 
@@ -119,7 +119,6 @@ GLuint LoadShaders(const char * vertex_path,const char * fragment_path){
 
 
 
-
 int main( void )
 {
 
@@ -180,9 +179,9 @@ int main( void )
 		}
 	}
 	GLuint sphereProg = LoadShaders("sphere.vs", "sphere.fs");
-	//Sphere player;
-	//player.initialize(sphereProg);
-	//player.setPosition(0.0, 0.0, 0.0);
+	Sphere player;
+	player.initialize(sphereProg);
+	player.setPosition(-0.3, -0.3, 0.0);
 
 
 	do{
@@ -193,12 +192,12 @@ int main( void )
 		for (int i = 0; i < N; i++) {
 			for (int j = 0; j < N; j++) {
 				for (int k = 0; k < N; k++) {
-					pd[i][j][k].draw();
-					pd[i][j][k].draw_lines();
+					pd[i][j][0].draw();
 				}
 			}
 		}
-		//player.draw();
+		
+		player.draw();
 
 
 		GLenum er;
