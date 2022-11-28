@@ -16,12 +16,106 @@ using namespace glm;
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
-#include <shader.hpp>
+#include "DrawableObject.hpp"
 #include "Pyramid.hpp"
+//#include "Sphere.hpp"
 
 #include <time.h>
 
 GLuint N = 10;
+
+GLuint LoadShaders(const char * vertex_path,const char * fragment_path){
+
+    GLuint vsID = glCreateShader(GL_VERTEX_SHADER);
+    GLuint fsID = glCreateShader(GL_FRAGMENT_SHADER);
+
+    // Read the Vertex Shader code from the file
+    std::string vsCode;
+    std::ifstream VertexShaderStream(vertex_path, std::ios::in);
+    if(VertexShaderStream.is_open()){
+        std::stringstream sstr;
+        sstr << VertexShaderStream.rdbuf();
+        vsCode = sstr.str();
+        VertexShaderStream.close();
+    }else{
+        printf("Impossible to open %s. Are you in the right directory ? Don't forget to read the FAQ !\n", vertex_path);
+        getchar();
+        return 0;
+    }
+
+    // Read the Fragment Shader code from the file
+    std::string fsCode;
+    std::ifstream FragmentShaderStream(fragment_path, std::ios::in);
+    if(FragmentShaderStream.is_open()){
+        std::stringstream sstr;
+        sstr << FragmentShaderStream.rdbuf();
+        fsCode = sstr.str();
+        FragmentShaderStream.close();
+    }
+
+    GLint result = GL_FALSE;
+    int InfoLogLength;
+
+
+    // Compile Vertex Shader
+    printf("Compiling shader : %s\n", vertex_path);
+    char const *vsPointer = vsCode.c_str();
+    glShaderSource(vsID, 1, &vsPointer , NULL);
+    glCompileShader(vsID);
+
+    // Check Vertex Shader
+    glGetShaderiv(vsID, GL_COMPILE_STATUS, &result);
+    glGetShaderiv(vsID, GL_INFO_LOG_LENGTH, &InfoLogLength);
+    if ( InfoLogLength > 0 ){
+        std::vector<char> VertexShaderErrorMessage(InfoLogLength+1);
+        glGetShaderInfoLog(vsID, InfoLogLength, NULL, &VertexShaderErrorMessage[0]);
+        printf("%s\n", &VertexShaderErrorMessage[0]);
+    }
+
+
+
+    // Compile Fragment Shader
+    printf("Compiling shader : %s\n", fragment_path);
+    char const * FragmentSourcePointer = fsCode.c_str();
+    glShaderSource(fsID, 1, &FragmentSourcePointer , NULL);
+    glCompileShader(fsID);
+
+    // Check Fragment Shader
+    glGetShaderiv(fsID, GL_COMPILE_STATUS, &result);
+    glGetShaderiv(fsID, GL_INFO_LOG_LENGTH, &InfoLogLength);
+    if ( InfoLogLength > 0 ){
+        std::vector<char> FragmentShaderErrorMessage(InfoLogLength+1);
+        glGetShaderInfoLog(fsID, InfoLogLength, NULL, &FragmentShaderErrorMessage[0]);
+        printf("%s\n", &FragmentShaderErrorMessage[0]);
+    }
+
+
+
+
+    GLuint programID = glCreateProgram();
+    glAttachShader(programID, vsID);
+    glAttachShader(programID, fsID);
+    glLinkProgram(programID);
+
+    // Check the program
+    glGetProgramiv(programID, GL_LINK_STATUS, &result);
+    glGetProgramiv(programID, GL_INFO_LOG_LENGTH, &InfoLogLength);
+    if ( InfoLogLength > 0 ){
+        std::vector<char> ProgramErrorMessage(InfoLogLength+1);
+        glGetProgramInfoLog(programID, InfoLogLength, NULL, &ProgramErrorMessage[0]);
+        printf("%s\n", &ProgramErrorMessage[0]);
+    }
+
+    
+    glDetachShader(programID, vsID);
+    glDetachShader(programID, fsID);
+    
+    glDeleteShader(vsID);
+    glDeleteShader(fsID);
+
+    return programID;
+}
+
 
 
 
@@ -74,19 +168,21 @@ int main( void )
 
 
 	// Create and compile our GLSL program from the shaders
-	Program pyramidProg = Program("pyramid.vs", "pyramid.fs");
+	GLuint pyramidProg = LoadShaders("pyramid.vs", "pyramid.fs");
 	Pyramid pd[N][N][N];
+
 	for (int i = 0; i < N; i++){
 		for (int j = 0; j < N; j++) {
 			for (int k = 0; k < N; k++) {
 				pd[i][j][k].initialize(pyramidProg);
-				pd[i][j][k].setPosition((float)i/N, (float)j/N, (float)i/N);
+				pd[i][j][k].setPosition(i, j, k);
 			}
 		}
 	}
-
-	//Program playerProg = Program("sphere.vs", "sphere.fs");
-
+	GLuint sphereProg = LoadShaders("sphere.vs", "sphere.fs");
+	//Sphere player;
+	//player.initialize(sphereProg);
+	//player.setPosition(0.0, 0.0, 0.0);
 
 
 	do{
@@ -96,11 +192,14 @@ int main( void )
 		
 		for (int i = 0; i < N; i++) {
 			for (int j = 0; j < N; j++) {
-				for (int k = 0; k < N; k++)
+				for (int k = 0; k < N; k++) {
 					pd[i][j][k].draw();
+					pd[i][j][k].draw_lines();
+				}
 			}
 		}
-		
+		//player.draw();
+
 
 		GLenum er;
 		while (er=glGetError())

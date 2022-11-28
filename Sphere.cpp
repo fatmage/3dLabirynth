@@ -2,20 +2,23 @@
 #include <iostream>
 #include <vector>
 
+extern GLuint LoadShaders(const char * vertex_path,const char * fragment_path);
 
-Sphere::Sphere(Program prog) {
+
+
+Sphere::Sphere(const char * vertex_path,const char * fragment_path) {
     createBuffers();
-    setProgram(prog);
+    programID = LoadShaders(vertex_path, fragment_path);
     setBuffers();
 }
 
 Sphere::Sphere() {
 }
 
-void Sphere::initialize(Program prog) {
+void Sphere::initialize(GLuint prog) {
     radius = 0.5;
     createBuffers();
-    setProgram(prog);
+    programID = prog;
     setBuffers();   
     setPosition(0.0, 0.0, 0.0);
     setRotation(0.0, 0.0, 0.0);

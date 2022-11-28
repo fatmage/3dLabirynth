@@ -42,9 +42,9 @@ class Sphere : public DrawableObject {
 
 
     public:
-    Sphere(Program prog);
+    Sphere(const char * vertex_path,const char * fragment_path);
     Sphere();
-    void initialize(Program prog);
+    void initialize(GLuint prog);
     void draw();
     void setPosition(GLfloat x, GLfloat y, GLfloat z);
     void setRotation(GLfloat a, GLfloat b, GLfloat c);

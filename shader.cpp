@@ -101,7 +101,7 @@ GLuint Program::LoadShaders(const char * vertex_path,const char * fragment_path)
 
 
 
-	GLuint programID = glCreateProgram();
+	programID = glCreateProgram();
 	glAttachShader(programID, vsID);
 	glAttachShader(programID, fsID);
 	glLinkProgram(programID);

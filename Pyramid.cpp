@@ -1,19 +1,21 @@
 #include "Pyramid.hpp"
 #include <iostream>
 
+extern GLuint LoadShaders(const char * vertex_path,const char * fragment_path);
 
-Pyramid::Pyramid(Program prog) {
+
+Pyramid::Pyramid(const char * vertex_path,const char * fragment_path) {
     createBuffers();
-    setProgram(prog);
+    programID = LoadShaders(vertex_path, fragment_path);
     setBuffers();
 }
 
 Pyramid::Pyramid() {
 }
 
-void Pyramid::initialize(Program prog) {
+void Pyramid::initialize(GLuint prog) {
     createBuffers();
-    setProgram(prog);
+    programID = prog;
     setBuffers();   
     rot[0] = rand()%7;
     rot[1] = rand()%7;
@@ -77,10 +79,32 @@ void Pyramid::draw() {
     setUniformmat4("transform", transformmat);
 
     glm::mat4 modelmat = glm::mat4(1.0f);
-    modelmat = glm::translate(modelmat, glm::vec3(pos[0], pos[1], pos[2]));
+    modelmat = glm::translate(modelmat, glm::vec3(pos[0]/(N), pos[1]/(N), pos[2]/(N)));
     setUniformmat4("model", modelmat);
 
+    setUniform3f("colorr", pos[0]/(N-1), pos[1]/(N-1), pos[2]/(N-1));
+
     glDrawArrays(GL_TRIANGLES, 0, 12);   
+}
+
+void Pyramid::draw_lines() {
+	bindProgram();
+    bindVAO();
+
+    glm::mat4 transformmat = glm::mat4(1.0f);
+    transformmat = glm::scale(transformmat, glm::vec3(0.7/N, 0.7/N, 0.7/N));
+    transformmat = glm::rotate(transformmat, rot[0], glm::vec3(0.0f, 0.0f, 1.0f));
+    transformmat = glm::rotate(transformmat, rot[1], glm::vec3(0.0f, 1.0f, 0.0f));
+    transformmat = glm::rotate(transformmat, rot[2], glm::vec3(1.0f, 0.0f, 0.0f));
+    setUniformmat4("transform", transformmat);
+
+    glm::mat4 modelmat = glm::mat4(1.0f);
+    modelmat = glm::translate(modelmat, glm::vec3(pos[0]/(N), pos[1]/(N), pos[2]/(N)));
+    setUniformmat4("model", modelmat);
+
+    setUniform3f("colorr", 0, 0, 0);
+
+    glDrawArrays(GL_LINES, 0, 12);   
 }
 
 

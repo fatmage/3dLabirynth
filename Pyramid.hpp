@@ -13,7 +13,6 @@
 #include <glm/gtc/type_ptr.hpp>
 
 
-#include "shader.hpp"
 #include "DrawableObject.hpp"
 
 extern GLuint N;
@@ -27,10 +26,11 @@ class Pyramid : public DrawableObject {
 
 
     public:
-    Pyramid(Program prog);
+    Pyramid(const char * vertex_path,const char * fragment_path);
     Pyramid();
-    void initialize(Program prog);
+    void initialize(GLuint prog);
     void draw();
+    void draw_lines();
     void setPosition(GLfloat x, GLfloat y, GLfloat z);
     void setRotation(GLfloat a, GLfloat b, GLfloat c);
 
