@@ -1,9 +1,13 @@
 #include "Sphere.hpp"
+#include "Camera.hpp"
 #include <iostream>
 #include <vector>
 
 extern GLuint LoadShaders(const char * vertex_path,const char * fragment_path);
 
+extern GLuint N;
+
+extern Camera camera;
 
 
 Sphere::Sphere(const char * vertex_path,const char * fragment_path) {
@@ -47,7 +51,6 @@ void Sphere::setBuffers() {
 	bindBuffers();
 
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-
 
 
     GLfloat x, y, z, xy;                              // vertex position
@@ -129,90 +132,6 @@ void Sphere::setBuffers() {
             }
         }
     }
-    /*
-
-    vertices.push_back(0.2); //0
-    vertices.push_back(0.2);
-    vertices.push_back(0.2);
-
-    vertices.push_back(0.2); //1
-    vertices.push_back(0.2);
-    vertices.push_back(-0.2);
-
-    vertices.push_back(-0.2); //2
-    vertices.push_back(0.2);
-    vertices.push_back(0.2);
-
-    vertices.push_back(-0.2); //3
-    vertices.push_back(0.2);
-    vertices.push_back(-0.2);
-
-    vertices.push_back(0.2); //4
-    vertices.push_back(-0.2);
-    vertices.push_back(0.2);
-
-    vertices.push_back(0.2); //5
-    vertices.push_back(-0.2);
-    vertices.push_back(-0.2);
-
-    vertices.push_back(-0.2); //6
-    vertices.push_back(-0.2);
-    vertices.push_back(0.2);
-
-    vertices.push_back(-0.2); //7
-    vertices.push_back(-0.2);
-    vertices.push_back(-0.2);
-
-    indices.push_back(0);
-    indices.push_back(1);
-    indices.push_back(2);
-    
-    indices.push_back(1);
-    indices.push_back(2);
-    indices.push_back(3);
-    
-    indices.push_back(0);
-    indices.push_back(2);
-    indices.push_back(4);
-
-    indices.push_back(2);
-    indices.push_back(6);
-    indices.push_back(4);
-
-    indices.push_back(6);
-    indices.push_back(4);
-    indices.push_back(5);
-
-    indices.push_back(6);
-    indices.push_back(5);
-    indices.push_back(7);
-
-    indices.push_back(2);
-    indices.push_back(3);
-    indices.push_back(6);
-
-    indices.push_back(3);
-    indices.push_back(6);
-    indices.push_back(7);
-
-    indices.push_back(0);
-    indices.push_back(1);
-    indices.push_back(4);
-
-    indices.push_back(1);
-    indices.push_back(4);
-    indices.push_back(5);
-
-    indices.push_back(1);
-    indices.push_back(3);
-    indices.push_back(5);
-
-    indices.push_back(3);
-    indices.push_back(5);
-    indices.push_back(7);
-
-*/
-
 
     glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(GLfloat), vertices.data(), GL_STATIC_DRAW);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLuint), indices.data(), GL_STATIC_DRAW);
@@ -228,18 +147,20 @@ void Sphere::draw() {
     bindVAO();
 
 
-    glm::mat4 transformmat = glm::mat4(1.0f);
-    transformmat = glm::scale(transformmat, glm::vec3(0.2/N, 0.2/N, 0.2/N));
-    transformmat = glm::rotate(transformmat, rot[0], glm::vec3(0.0f, 0.0f, 1.0f));
-    transformmat = glm::rotate(transformmat, rot[1], glm::vec3(0.0f, 1.0f, 0.0f));
-    transformmat = glm::rotate(transformmat, rot[2], glm::vec3(1.0f, 0.0f, 0.0f));
-    setUniformmat4("transform", transformmat);
-
     glm::mat4 modelmat = glm::mat4(1.0f);
     modelmat = glm::translate(modelmat, glm::vec3(pos[0], pos[1], pos[2]));
+    modelmat = glm::rotate(modelmat, rot[0], glm::vec3(0.0f, 0.0f, 1.0f));
+    modelmat = glm::rotate(modelmat, rot[1], glm::vec3(0.0f, 1.0f, 0.0f));
+    modelmat = glm::rotate(modelmat, rot[2], glm::vec3(1.0f, 0.0f, 0.0f));
+    modelmat = glm::scale(modelmat, glm::vec3(0.15, 0.15, 0.15));
     setUniformmat4("model", modelmat);
 
-    //setUniform3f("colorr", pos[0]/(N-1), pos[1]/(N-1), pos[2]/(N-1));
+    glm::mat4 viewmat = camera.getMainView();
+    setUniformmat4("view", viewmat);
+
+    glm::mat4 projectionmat = camera.getProjection();
+    setUniformmat4("projection", projectionmat);
+
 
     glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, (void*)0);
 }

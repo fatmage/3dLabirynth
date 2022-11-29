@@ -19,10 +19,13 @@ using namespace glm;
 #include "DrawableObject.hpp"
 #include "Pyramid.hpp"
 #include "Sphere.hpp"
+#include "Camera.hpp"
 
 #include <time.h>
 
 GLuint N = 10;
+
+Camera camera = Camera();
 
 GLuint LoadShaders(const char * vertex_path,const char * fragment_path){
 
@@ -116,8 +119,29 @@ GLuint LoadShaders(const char * vertex_path,const char * fragment_path){
     return programID;
 }
 
+void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+{
+	glViewport(0, 0, width, height);
+	camera.resize(width, height);
+}
 
 
+void processInput(GLFWwindow *window) {
+	const float cameraSpeed = 0.05f; // adjust accordingly
+	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+		camera.moveForward();
+	}
+	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+		camera.moveBackward();
+	}
+	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+		camera.moveLeft();
+	}
+	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+		camera.moveRight();
+	}
+
+}
 
 int main( void )
 {
@@ -138,7 +162,7 @@ int main( void )
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	// Open a window and create its OpenGL context
-	window = glfwCreateWindow( 650, 650, "Tutorial 02 - Red triangle", NULL, NULL);
+	window = glfwCreateWindow(camera.getMainWidth(), camera.getMainHeight(), "Tutorial 02 - Red triangle", NULL, NULL);
 	if( window == NULL ){
 		fprintf( stderr, "Failed to open GLFW window. If you have an Intel GPU, they are not 3.3 compatible. Try the 2.1 version of the tutorials.\n" );
 		getchar();
@@ -146,7 +170,12 @@ int main( void )
 		return -1;
 	}
 	glfwMakeContextCurrent(window);
-	glViewport(0, 0, 650, 650);
+	glViewport(0, 0, camera.getMainWidth(), camera.getMainHeight());
+	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
+
+
+
+	
 
 	// Initialize GLEW
 	glewExperimental = true; // Needed for core profile
@@ -178,13 +207,16 @@ int main( void )
 			}
 		}
 	}
+
 	GLuint sphereProg = LoadShaders("sphere.vs", "sphere.fs");
 	Sphere player;
 	player.initialize(sphereProg);
-	player.setPosition(-0.3, -0.3, 0.0);
+	player.setPosition(0.0, 0.0, 0.0);
 
 
 	do{
+
+		processInput(window);
 		// Clear the screen
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -192,7 +224,8 @@ int main( void )
 		for (int i = 0; i < N; i++) {
 			for (int j = 0; j < N; j++) {
 				for (int k = 0; k < N; k++) {
-					pd[i][j][0].draw();
+					if (!(i == 0 && j == 0 && k == 0))
+						pd[i][j][k].draw();
 				}
 			}
 		}

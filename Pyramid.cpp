@@ -1,7 +1,12 @@
 #include "Pyramid.hpp"
+#include "Camera.hpp"
 #include <iostream>
 
 extern GLuint LoadShaders(const char * vertex_path,const char * fragment_path);
+
+extern GLuint N;
+
+extern Camera camera;
 
 
 Pyramid::Pyramid(const char * vertex_path,const char * fragment_path) {
@@ -23,11 +28,11 @@ void Pyramid::initialize(GLuint prog) {
 }
 
 void Pyramid::setPosition(GLfloat x, GLfloat y, GLfloat z) {
-    if (x >= 0)
+
         pos[0] = x;
-    if (y >= 0)
+
         pos[1] = y;
-    if (z >= 0)
+
         pos[2] = z;
 }       
 
@@ -72,27 +77,19 @@ void Pyramid::draw() {
     bindVAO();
 
     glm::mat4 modelmat = glm::mat4(1.0f);
-    modelmat = glm::scale(modelmat, glm::vec3(0.7/N, 0.7/N, 0.7/N));
+    modelmat = glm::translate(modelmat, glm::vec3(pos[0], pos[1], pos[2]));
     modelmat = glm::rotate(modelmat, rot[0], glm::vec3(0.0f, 0.0f, 1.0f));
     modelmat = glm::rotate(modelmat, rot[1], glm::vec3(0.0f, 1.0f, 0.0f));
     modelmat = glm::rotate(modelmat, rot[2], glm::vec3(1.0f, 0.0f, 0.0f));
-    modelmat = glm::translate(modelmat, glm::vec3(pos[0], pos[1], pos[2]));
+    modelmat = glm::scale(modelmat, glm::vec3(0.7, 0.7, 0.7));
+
+
     setUniformmat4("model", modelmat);
 
-    glm::mat4 viewmat = glm::lookAt(
-        glm::vec3(-10, -10, -10),
-        glm::vec3(0.0, 0.0, 0.0),
-        glm::vec3(0,1,0)
-    );
+    glm::mat4 viewmat = camera.getMainView();
     setUniformmat4("view", viewmat);
 
-    glm::mat4 projectionmat = glm::perspective<float>(
-        glm::radians((90.0/360)*2*PI), // The vertical Field of View, in radians: the amount of "zoom". Think "camera lens". Usually between 90° (extra wide) and 30° (quite zoomed in)
-        3.0f / 3.0f,       // Aspect Ratio. Depends on the size of your window. Notice that 4/3 == 800/600 == 1280/960, sounds familiar ?
-        0.1f,              // Near clipping plane. Keep as big as possible, or you'll get precision issues.
-        100.0f             // Far clipping plane. Keep as little as possible.
-    );
-
+    glm::mat4 projectionmat = camera.getProjection(); 
     setUniformmat4("projection", projectionmat);
 
     setUniform3f("colorr", pos[0]/(N-1), pos[1]/(N-1), pos[2]/(N-1));

@@ -8,6 +8,6 @@ void main()
 {
 
 	// Output color = red 
-	color = vec4(pos.xyz, 1.0);
+	color = vec4(pos, 1.0);
 
 }

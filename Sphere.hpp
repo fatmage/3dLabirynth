@@ -13,7 +13,6 @@
 #include <glm/gtc/type_ptr.hpp>
 
 #include <vector>
-#include "shader.hpp"
 #include "DrawableObject.hpp"
 
 
