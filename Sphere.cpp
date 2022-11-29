@@ -29,9 +29,7 @@ void Sphere::initialize(GLuint prog) {
 }
 
 void Sphere::setPosition(GLfloat x, GLfloat y, GLfloat z) {
-        pos[0] = x;
-        pos[1] = y;
-        pos[2] = z;
+        pos = glm::vec3(x, y, z);
 }       
 
 void Sphere::setRotation(GLfloat a, GLfloat b, GLfloat c) {
@@ -139,11 +137,11 @@ void Sphere::draw() {
 
 
     glm::mat4 modelmat = glm::mat4(1.0f);
-    modelmat = glm::translate(modelmat, glm::vec3(pos[0], pos[1], pos[2]));
+    modelmat = glm::translate(modelmat, pos);
     modelmat = glm::rotate(modelmat, rot[0], glm::vec3(0.0f, 0.0f, 1.0f));
     modelmat = glm::rotate(modelmat, rot[1], glm::vec3(0.0f, 1.0f, 0.0f));
     modelmat = glm::rotate(modelmat, rot[2], glm::vec3(1.0f, 0.0f, 0.0f));
-    modelmat = glm::scale(modelmat, glm::vec3(0.15, 0.15, 0.15));
+    modelmat = glm::scale(modelmat, glm::vec3(0.1, 0.1, 0.1));
     setUniformmat4("model", modelmat);
 
     glm::mat4 viewmat = camera.getMainView();
@@ -154,6 +152,23 @@ void Sphere::draw() {
 
 
     glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, (void*)0);
+}
+
+void Sphere::moveForward() {
+    pos -= camera.cameraSpeed * camera.cameraFront;
+}
+
+void Sphere::moveBackward() {
+    pos += camera.cameraSpeed * camera.cameraFront;
+}
+
+void Sphere::moveLeft() {
+    pos += glm::normalize(glm::cross(camera.cameraFront, camera.cameraUp)) * camera.cameraSpeed;
+}
+
+void Sphere::moveRight() {
+    pos -= glm::normalize(glm::cross(camera.cameraFront, camera.cameraUp)) * camera.cameraSpeed;
+
 }
 
 

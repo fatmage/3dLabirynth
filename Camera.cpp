@@ -13,9 +13,9 @@ Camera::Camera() {
     yaw = 45.0f;
 
     cameraPos = glm::vec3(0.0f, 0.0f, 0.0f);
-    cameraFront = glm::vec3(cos(glm::radians(yaw)) * cos(glm::radians(pitch)),
+    cameraFront = glm::normalize(glm::vec3(-1.0f, -1.0f, -1.0f));/*glm::vec3(cos(glm::radians(yaw)) * cos(glm::radians(pitch)),
                             sin(glm::radians(pitch)),
-                            sin(glm::radians(yaw)) * cos(glm::radians(pitch)));
+                            sin(glm::radians(yaw)) * cos(glm::radians(pitch)));*/
     cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
 }
@@ -54,32 +54,33 @@ int Camera::getSecondaryHeight() {
 
 glm::mat4 Camera::getProjection() {
     return glm::perspective(
-        glm::radians(40.0f), // The vertical Field of View, in radians: the amount of "zoom". Think "camera lens". Usually between 90° (extra wide) and 30° (quite zoomed in)
+        glm::radians(45.0f), // The vertical Field of View, in radians: the amount of "zoom". Think "camera lens". Usually between 90° (extra wide) and 30° (quite zoomed in)
         (float)mainWindowWidth / (float)mainWindowHeight,       // Aspect Ratio. Depends on the size of your window. Notice that 4/3 == 800/600 == 1280/960, sounds familiar ?
-        0.1f,              // Near clipping plane. Keep as big as possible, or you'll get precision issues.
+        0.8f,              // Near clipping plane. Keep as big as possible, or you'll get precision issues.
         100.0f             // Far clipping plane. Keep as little as possible.
     );
 }
 
 
 glm::mat4 Camera::getMainView() {
-    return glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+    return glm::lookAt(cameraPos+cameraFront, cameraPos, cameraUp);
 }
 
 void Camera::moveForward() {
-    cameraPos += cameraSpeed * cameraFront;
-}
-
-void Camera::moveBackward() {
     cameraPos -= cameraSpeed * cameraFront;
 }
 
+void Camera::moveBackward() {
+
+    cameraPos += cameraSpeed * cameraFront;
+}
+
 void Camera::moveLeft() {
-    cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+    cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
 }
 
 void Camera::moveRight() {
-    cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
+    cameraPos -= glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
 }
 
 void Camera::rotate(float xpos, float ypos) {
@@ -92,7 +93,7 @@ void Camera::rotate(float xpos, float ypos) {
     yoffset *= sensitivity;
 
     yaw += xoffset;
-    pitch += yoffset;
+    pitch -= yoffset;
 
     if(pitch > 89.0f)
     pitch = 89.0f;

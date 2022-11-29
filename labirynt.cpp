@@ -125,25 +125,6 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 	camera.resize(width, height);
 }
 
-void processInput(GLFWwindow *window) {
-	const float cameraSpeed = 0.05f; // adjust accordingly
-	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-		camera.moveForward();
-		//player.moveForward();
-	}
-	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-		camera.moveBackward();
-		//player.moveBackward();
-	}
-	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-		camera.moveLeft();
-		//player.moveLeft();
-	}
-	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-		camera.moveRight();
-		//player.moveRight(;)
-	}
-}
 
 void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
 	camera.rotate(xpos, ypos);
@@ -225,7 +206,23 @@ int main( void )
 
 	do{
 
-		processInput(window);
+		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+			camera.moveForward();
+			player.moveForward();
+		}
+		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+			camera.moveBackward();
+			player.moveBackward();
+		}
+		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+			camera.moveLeft();
+			player.moveLeft();
+		}
+		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+			camera.moveRight();
+			player.moveRight();
+		}
+
 		// Clear the screen
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
