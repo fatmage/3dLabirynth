@@ -28,7 +28,7 @@ class Pyramid : public DrawableObject {
     public:
     Pyramid(const char * vertex_path,const char * fragment_path);
     Pyramid();
-    void initialize(GLuint prog);
+    void initialize(GLuint prog, GLfloat x, GLfloat y, GLfloat z);
     void draw();
     void draw_lines();
     void setPosition(GLfloat x, GLfloat y, GLfloat z);

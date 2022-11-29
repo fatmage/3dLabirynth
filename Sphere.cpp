@@ -40,18 +40,9 @@ void Sphere::setRotation(GLfloat a, GLfloat b, GLfloat c) {
     rot[2] = c;
 }
 
-void Sphere::createBuffers() {
-    glGenVertexArrays(1, &vao);
-    glGenBuffers(1, &vbo);
-    glGenBuffers(1, &ebo);
-}
-
 void Sphere::setBuffers() {
     bindVAO();
 	bindBuffers();
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-
 
     GLfloat x, y, z, xy;                              // vertex position
     GLfloat nx, ny, nz, lengthInv = 1.0f / radius;    // vertex normal

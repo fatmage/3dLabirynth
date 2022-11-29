@@ -26,7 +26,7 @@ extern GLuint N;
 class Sphere : public DrawableObject {
     private:
     GLfloat rot[3];
-    GLfloat pos[3];
+    glm::vec3 pos;
     GLfloat radius;
     std::vector<GLfloat> vertices;
     std::vector<GLfloat> normals;
@@ -36,9 +36,6 @@ class Sphere : public DrawableObject {
     GLuint ebo;
 
     void setBuffers();
-    void createBuffers();
-
-
 
     public:
     Sphere(const char * vertex_path,const char * fragment_path);
@@ -47,6 +44,10 @@ class Sphere : public DrawableObject {
     void draw();
     void setPosition(GLfloat x, GLfloat y, GLfloat z);
     void setRotation(GLfloat a, GLfloat b, GLfloat c);
+    void moveForward();
+    void moveBackward();
+    void moveLeft();
+    void moveRight();
 
 };
 

@@ -6,10 +6,16 @@ extern GLFWwindow *window;
 
 Camera::Camera() {
     setMainWindow(600,600);
+    lastX = 300;
+    lastY = 300;
     setSecondaryWindow(100,100);
+    pitch = 45.0f;
+    yaw = 45.0f;
 
-    cameraPos = glm::vec3(-1.0f, -1.0f, -1.0f);
-    cameraFront = glm::vec3(1.0f, 1.0f, 1.0f);
+    cameraPos = glm::vec3(0.0f, 0.0f, 0.0f);
+    cameraFront = glm::vec3(cos(glm::radians(yaw)) * cos(glm::radians(pitch)),
+                            sin(glm::radians(pitch)),
+                            sin(glm::radians(yaw)) * cos(glm::radians(pitch)));
     cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
 }
@@ -75,5 +81,35 @@ void Camera::moveLeft() {
 void Camera::moveRight() {
     cameraPos += glm::normalize(glm::cross(cameraFront, cameraUp)) * cameraSpeed;
 }
+
+void Camera::rotate(float xpos, float ypos) {
+    float xoffset = xpos - lastX;
+    float yoffset = lastY - ypos; // reversed: y ranges bottom to top
+    lastX = xpos;
+    lastY = ypos;
+    const float sensitivity = 0.1f;
+    xoffset *= sensitivity;
+    yoffset *= sensitivity;
+
+    yaw += xoffset;
+    pitch += yoffset;
+
+    if(pitch > 89.0f)
+    pitch = 89.0f;
+    if(pitch < -89.0f)
+    pitch = -89.0f;
+
+    glm::vec3 direction;
+
+    cameraFront = glm::normalize(glm::vec3( cos(glm::radians(yaw)) * cos(glm::radians(pitch)),
+                                            sin(glm::radians(pitch)),
+                                            sin(glm::radians(yaw)) * cos(glm::radians(pitch))));
+
+    printf("%f %f\n", pitch, yaw);
+
+}
+
+
+
 
 

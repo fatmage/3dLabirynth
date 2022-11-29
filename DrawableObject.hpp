@@ -25,14 +25,15 @@
 
 class DrawableObject {
     protected:
-    GLuint vao, vbo;
+    GLuint vao, vbo, ebo;
     GLuint programID;
+
+    public:
     void createBuffers() {
         glGenVertexArrays(1, &vao);
         glGenBuffers(1, &vbo);
+        glGenBuffers(1, &ebo);
     }
-
-    public:
     DrawableObject() {
       createBuffers();
     }
@@ -48,8 +49,9 @@ class DrawableObject {
         glUseProgram(programID);
     }
    void bindBuffers() {
-      glBindVertexArray(vao);
-      glBindBuffer(GL_ARRAY_BUFFER, vbo);
+        glBindVertexArray(vao);
+        glBindBuffer(GL_ARRAY_BUFFER, vbo);
+        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
     }
 
     void setUniform3f(const char* name, GLfloat v1, GLfloat v2, GLfloat v3) {

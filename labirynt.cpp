@@ -125,22 +125,28 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 	camera.resize(width, height);
 }
 
-
 void processInput(GLFWwindow *window) {
 	const float cameraSpeed = 0.05f; // adjust accordingly
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
 		camera.moveForward();
+		//player.moveForward();
 	}
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
 		camera.moveBackward();
+		//player.moveBackward();
 	}
 	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
 		camera.moveLeft();
+		//player.moveLeft();
 	}
 	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
 		camera.moveRight();
+		//player.moveRight(;)
 	}
+}
 
+void mouse_callback(GLFWwindow* window, double xpos, double ypos) {
+	camera.rotate(xpos, ypos);
 }
 
 int main( void )
@@ -191,6 +197,10 @@ int main( void )
 
 	glEnable(GL_DEPTH_TEST);
 
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+	glfwSetCursorPosCallback(window, mouse_callback);
+
 	// Dark blue background
 	glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
 
@@ -202,8 +212,7 @@ int main( void )
 	for (int i = 0; i < N; i++){
 		for (int j = 0; j < N; j++) {
 			for (int k = 0; k < N; k++) {
-				pd[i][j][k].initialize(pyramidProg);
-				pd[i][j][k].setPosition(i, j, k);
+				pd[i][j][k].initialize(pyramidProg, i, j, k);
 			}
 		}
 	}

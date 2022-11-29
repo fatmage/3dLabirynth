@@ -28,13 +28,15 @@ class Camera {
     private:
     int mainWindowWidth, mainWindowHeight;
     int secondaryWindowWidth, secondaryWindowHeight;
-    float pitch, yaw, cos;
+    float pitch, yaw;
+
+    float lastX, lastY;
+
+    public:
     glm::vec3 cameraPos;
     glm::vec3 cameraFront;
     glm::vec3 cameraUp;
 	float cameraSpeed = 0.05f;
-
-    public:
 
     Camera();
     glm::mat4 getMainView();
@@ -51,6 +53,7 @@ class Camera {
     void moveBackward();
     void moveLeft();
     void moveRight();
+    void rotate(float xpos, float ypos);
 
 };
 
