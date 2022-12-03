@@ -18,6 +18,7 @@ Pyramid::Pyramid(const char * vertex_path,const char * fragment_path) {
 Pyramid::Pyramid() {
 }
 
+
 void Pyramid::initialize(GLuint prog, GLfloat x, GLfloat y, GLfloat z) {
     createBuffers();
     programID = prog;
@@ -41,12 +42,10 @@ void Pyramid::setRotation(GLfloat a, GLfloat b, GLfloat c) {
 void Pyramid::setBuffers() {
 	bindBuffers();
 
-    glm::vec3 vertices[] = { 
-        glm::vec3(-0.86f, -0.5f, 0.41f), //dolny trójkat
-        glm::vec3(0.86f, -0.5f, 0.41f),
-        glm::vec3(0.0f,  1.0f, 0.41f),
-        glm::vec3(0.0f,  0.0f, -1.0f),  
-    };
+    vertices[0] = glm::vec3(-0.86f, -0.5f, 0.41f); //dolny trójkat
+    vertices[1] = glm::vec3(0.86f, -0.5f, 0.41f);
+    vertices[2] = glm::vec3(0.0f,  1.0f, 0.41f);
+    vertices[3] = glm::vec3(0.0f,  0.0f, -1.0f);  
 
     GLuint indices[] = {
         0, 1, 2,
@@ -78,26 +77,37 @@ void Pyramid::setBuffers() {
 void Pyramid::draw() {
 	bindProgram();
     bindVAO();
-
-
-
-
-   // setUniformmat4("model", modelmat);
-
+    
     glm::mat4 viewmat = camera.getMainView();
     setUniformmat4("view", viewmat);
 
-    glm::mat4 projectionmat = camera.getProjection(); 
+    glm::mat4 projectionmat = camera.getMainProjection(); 
     setUniformmat4("projection", projectionmat);
 
-    setUniform3f("colorr", pos[0]/(N-1), pos[1]/(N-1), pos[2]/(N-1));
-
-
-
+    setUniform3f("col", pos[0]/(N-1), pos[1]/(N-1), pos[2]/(N-1));
 
     glDrawElements(GL_TRIANGLES, 12, GL_UNSIGNED_INT, (void*)0);  
 
-    setUniform3f("colorr", 0, 0, 0);
+    setUniform3f("col", 0, 0, 0);
+
+    glDrawElements(GL_LINES, 12, GL_UNSIGNED_INT, (void*)0);   
+}
+
+void Pyramid::drawSecondary() {
+  	bindProgram();
+    bindVAO();  
+
+    glm::mat4 viewmat = camera.getSecondaryView();
+    setUniformmat4("view", viewmat);
+
+    glm::mat4 projectionmat = camera.getSecondaryProjection(); 
+    setUniformmat4("projection", projectionmat);
+
+    setUniform3f("col", pos[0]/(N-1), pos[1]/(N-1), pos[2]/(N-1));
+
+    glDrawElements(GL_TRIANGLES, 12, GL_UNSIGNED_INT, (void*)0); 
+
+    setUniform3f("col", 0, 0, 0);
 
     glDrawElements(GL_LINES, 12, GL_UNSIGNED_INT, (void*)0); 
 }

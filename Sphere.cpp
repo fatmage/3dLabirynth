@@ -20,7 +20,7 @@ Sphere::Sphere() {
 }
 
 void Sphere::initialize(GLuint prog) {
-    radius = 1.0;
+    radius = 0.1;
     createBuffers();
     programID = prog;
     setPosition(0.0, 0.0, 0.0);
@@ -36,6 +36,14 @@ void Sphere::setRotation(GLfloat a, GLfloat b, GLfloat c) {
     rot[0] = a;
     rot[1] = b;
     rot[2] = c;
+}
+
+glm::vec3 Sphere::getCenter() {
+    return pos;
+}
+
+GLfloat Sphere::getRadius() {
+    return radius;
 }
 
 void Sphere::setBuffers() {
@@ -135,39 +143,50 @@ void Sphere::draw() {
 	bindProgram();
     bindVAO();
 
-
     glm::mat4 modelmat = glm::mat4(1.0f);
     modelmat = glm::translate(modelmat, pos);
-    modelmat = glm::rotate(modelmat, rot[0], glm::vec3(0.0f, 0.0f, 1.0f));
-    modelmat = glm::rotate(modelmat, rot[1], glm::vec3(0.0f, 1.0f, 0.0f));
-    modelmat = glm::rotate(modelmat, rot[2], glm::vec3(1.0f, 0.0f, 0.0f));
-    modelmat = glm::scale(modelmat, glm::vec3(0.1, 0.1, 0.1));
     setUniformmat4("model", modelmat);
 
     glm::mat4 viewmat = camera.getMainView();
     setUniformmat4("view", viewmat);
 
-    glm::mat4 projectionmat = camera.getProjection();
+    glm::mat4 projectionmat = camera.getMainProjection();
     setUniformmat4("projection", projectionmat);
-
 
     glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, (void*)0);
 }
 
-void Sphere::moveForward() {
-    pos -= camera.cameraSpeed * camera.cameraFront;
+void Sphere::drawSecondary() {
+ 	bindProgram();
+    bindVAO();
+
+    glm::mat4 modelmat = glm::mat4(1.0f);
+    modelmat = glm::translate(modelmat, pos);
+    setUniformmat4("model", modelmat);
+
+    glm::mat4 viewmat = camera.getSecondaryView();
+    setUniformmat4("view", viewmat);
+
+    glm::mat4 projectionmat = camera.getSecondaryProjection();
+    setUniformmat4("projection", projectionmat);
+
+    glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, (void*)0);   
 }
 
-void Sphere::moveBackward() {
-    pos += camera.cameraSpeed * camera.cameraFront;
+void Sphere::moveForward(GLfloat speed, GLfloat delta) {
+    pos -= speed * delta * camera.cameraFront;
 }
 
-void Sphere::moveLeft() {
-    pos += glm::normalize(glm::cross(camera.cameraFront, camera.cameraUp)) * camera.cameraSpeed;
+void Sphere::moveBackward(GLfloat speed, GLfloat delta) {
+    pos += speed * delta * camera.cameraFront;
 }
 
-void Sphere::moveRight() {
-    pos -= glm::normalize(glm::cross(camera.cameraFront, camera.cameraUp)) * camera.cameraSpeed;
+void Sphere::moveLeft(GLfloat speed, GLfloat delta) {
+    pos += glm::normalize(glm::cross(camera.cameraFront, camera.cameraUp)) * speed * delta;
+}
+
+void Sphere::moveRight(GLfloat speed, GLfloat delta) {
+    pos -= glm::normalize(glm::cross(camera.cameraFront, camera.cameraUp)) * speed * delta;
 
 }
 

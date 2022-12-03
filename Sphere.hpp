@@ -42,12 +42,15 @@ class Sphere : public DrawableObject {
     Sphere();
     void initialize(GLuint prog);
     void draw();
+    void drawSecondary();
     void setPosition(GLfloat x, GLfloat y, GLfloat z);
     void setRotation(GLfloat a, GLfloat b, GLfloat c);
-    void moveForward();
-    void moveBackward();
-    void moveLeft();
-    void moveRight();
+    void moveForward(GLfloat speed, GLfloat delta);
+    void moveBackward(GLfloat speed, GLfloat delta);
+    void moveLeft(GLfloat speed, GLfloat delta);
+    void moveRight(GLfloat speed, GLfloat delta);
+    glm::vec3 getCenter();
+    GLfloat getRadius();
 
 };
 

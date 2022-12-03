@@ -2,12 +2,12 @@
 
 // Ouput data
 out vec4 color;
-uniform vec3 colorr;
+uniform vec3 col;
 
 void main()
 {
 
 	// Output color = red 
-	color = vec4(colorr.xyz, 1.0);
+	color = vec4(col.xyz, 1.0);
 
 }

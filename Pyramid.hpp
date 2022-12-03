@@ -25,14 +25,17 @@ class Pyramid : public DrawableObject {
 
 
 
+
     public:
+    glm::vec3 vertices[4];
     Pyramid(const char * vertex_path,const char * fragment_path);
     Pyramid();
     void initialize(GLuint prog, GLfloat x, GLfloat y, GLfloat z);
     void draw();
-    void draw_lines();
+    void drawSecondary();
     void setPosition(GLfloat x, GLfloat y, GLfloat z);
     void setRotation(GLfloat a, GLfloat b, GLfloat c);
+    void findNearestFace(glm::vec3 point, glm::vec3 face[3]);
 
 };
 
